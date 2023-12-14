@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MandelbrotViewer main" type="DotNetFolderPublish" factoryName="Publish to folder">
+    <riderPublish configuration="Release" platform="Any CPU" produce_single_file="true" runtime="win-x64" target_folder="$PROJECT_DIR$/bin/Release/net7.0-windows/win-x64/publish" target_framework="net7.0-windows" uuid_high="7812827233061061638" uuid_low="-7929443960219223966" />
+    <method v="2" />
+  </configuration>
+</component>

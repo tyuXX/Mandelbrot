@@ -70,7 +70,6 @@ public class DoubleRenderer : MandelbrotRendererBase
                 else
                     bitmapBits[py * screenWidth + px] = colorPalette[iteration * iterScale % colorPaletteSize];
             }
-
             if (terminateThreads) break;
         }
 
