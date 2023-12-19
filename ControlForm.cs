@@ -14,12 +14,12 @@ public partial class ControlForm : Form
         cbRenderer.SelectedIndex = 0;
         cbRenderer.SelectedIndexChanged += cbRenderer_SelectedIndexChanged;
     }
-
+    
     private void udIterations_ValueChanged(object sender, EventArgs e)
     {
         parentForm.OnParametersChanged();
     }
-
+    
     private void btnReset_Click(object sender, EventArgs e)
     {
         parentForm.ResetInitialParams();

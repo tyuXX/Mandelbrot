@@ -22,6 +22,7 @@ public abstract class MandelbrotRendererBase
         this.colorPaletteSize = colorPaletteSize;
         currentThreads = new List<Thread>();
     }
+    //fix this
     public abstract void SetInitialParams(double xorigin, double yorigin, double xextent);
     
     public void UpdateBitmapBits(uint[] bitmapBits)
@@ -35,26 +36,32 @@ public abstract class MandelbrotRendererBase
         screenHeight = height;
     }
 
-    public void Draw(int numIterations, int numThreads)
+    public void Draw(int nIterations, int nThreads)
     {
-        this.numIterations = numIterations;
-        this.numThreads = numThreads;
+        numIterations = nIterations;
+        numThreads = nThreads;
 
-        int yInc = screenHeight / numThreads;
+        int yInc = screenHeight / nThreads;
         int yPos = 0;
-        for (int i = 0; i < numThreads; i++)
+        for (short i = 0; i < nThreads; i++)
         {
             Thread thread = new Thread(DrawInternal);
             currentThreads.Add(thread);
-            MandelThreadParams p = new MandelThreadParams();
-            p.parentForm = parentContext;
-            p.startX = 0;
-            p.startY = yPos;
-            p.startWidth = screenWidth;
-            if (i == numThreads - 1)
+            MandelThreadParams p = new MandelThreadParams
+            {
+                parentForm = parentContext,
+                startX = 0,
+                startY = yPos,
+                startWidth = screenWidth
+            };
+            if (i == nThreads - 1)
+            {
                 p.startHeight = screenHeight - yPos;
+            }
             else
+            {
                 p.startHeight = yInc;
+            }
             thread.Start(p);
             yPos += yInc;
         }

@@ -2,8 +2,8 @@
 
 public class BigInteger : IComparable, IComparable<BigInteger>
 {
-    private const int SAMPLE_MAX_DIGITS = 128;
-    private const sbyte NUM_BASE = 10;
+    private const int SampleMaxDıgıts = 128;
+    private const sbyte NumBase = 10;
 
     private readonly int maxDigits;
 
@@ -46,25 +46,25 @@ public class BigInteger : IComparable, IComparable<BigInteger>
             NumDigits = 0;
             while (init > 0)
             {
-                Digits[NumDigits++] = (sbyte) (init % NUM_BASE);
+                Digits[NumDigits++] = (sbyte) (init % NumBase);
                 init /= 10;
             }
         }
     }
 
-    public BigInteger(int init) : this(init, SAMPLE_MAX_DIGITS)
+    public BigInteger(int init) : this(init, SampleMaxDıgıts)
     {
     }
 
-    public BigInteger(long init) : this(init, SAMPLE_MAX_DIGITS)
+    public BigInteger(long init) : this(init, SampleMaxDıgıts)
     {
     }
 
-    public BigInteger(float init) : this((long) init, SAMPLE_MAX_DIGITS)
+    public BigInteger(float init) : this((long) init, SampleMaxDıgıts)
     {
     }
 
-    public BigInteger(double init) : this((long) init, SAMPLE_MAX_DIGITS)
+    public BigInteger(double init) : this((long) init, SampleMaxDıgıts)
     {
     }
 
@@ -188,10 +188,10 @@ public class BigInteger : IComparable, IComparable<BigInteger>
         {
             Digits[i] += value.Digits[i];
             Digits[i] += carry;
-            if (Digits[i] >= NUM_BASE)
+            if (Digits[i] >= NumBase)
             {
                 carry = 1;
-                Digits[i] -= NUM_BASE;
+                Digits[i] -= NumBase;
             }
             else
             {
@@ -218,7 +218,7 @@ public class BigInteger : IComparable, IComparable<BigInteger>
         {
             if (Digits[i] < value.Digits[i] + borrow)
             {
-                Digits[i] += NUM_BASE;
+                Digits[i] += NumBase;
                 Digits[i] -= value.Digits[i];
                 Digits[i] -= borrow;
                 borrow = 1;
@@ -251,7 +251,7 @@ public class BigInteger : IComparable, IComparable<BigInteger>
             Digits[i] += borrow;
             if (Digits[i] > 0)
             {
-                Digits[i] = (sbyte) -(Digits[i] - NUM_BASE);
+                Digits[i] = (sbyte) -(Digits[i] - NumBase);
                 borrow = 1;
             }
             else
@@ -339,10 +339,10 @@ public class BigInteger : IComparable, IComparable<BigInteger>
             for (i = 0; i < NumDigits; i++)
             {
                 mulTemp1[numTempDigits] = (sbyte) (value.Digits[d] * Digits[i] + carry);
-                if (mulTemp1[numTempDigits] >= NUM_BASE)
+                if (mulTemp1[numTempDigits] >= NumBase)
                 {
-                    carry = (sbyte) (mulTemp1[numTempDigits] / NUM_BASE);
-                    mulTemp1[numTempDigits] %= NUM_BASE;
+                    carry = (sbyte) (mulTemp1[numTempDigits] / NumBase);
+                    mulTemp1[numTempDigits] %= NumBase;
                 }
                 else
                 {
@@ -360,10 +360,10 @@ public class BigInteger : IComparable, IComparable<BigInteger>
             {
                 mulTemp2[i + d] += mulTemp1[i];
                 mulTemp2[i + d] += carry;
-                if (mulTemp2[i + d] >= NUM_BASE)
+                if (mulTemp2[i + d] >= NumBase)
                 {
                     carry = 1;
-                    mulTemp2[i + d] -= NUM_BASE;
+                    mulTemp2[i + d] -= NumBase;
                 }
                 else
                 {
@@ -423,7 +423,7 @@ public class BigInteger : IComparable, IComparable<BigInteger>
         {
             BigInteger mtest = new BigInteger(value).MulByPow10(m);
 
-            for (i = 1; i <= NUM_BASE; i++)
+            for (i = 1; i <= NumBase; i++)
             {
                 BigInteger b = new BigInteger(mtest).UncheckedMultiply(i);
                 if (b > tempVal) break;

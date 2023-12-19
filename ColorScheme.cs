@@ -6,12 +6,11 @@ public static class ColorScheme
     {
         int elementsPerStep = numElements / (colorArray.Length - 1);
         uint[] colors = new uint[numElements];
-
         float r = 0f, g = 0f, b = 0f;
         float rInc = 0f, gInc = 0f, bInc = 0f;
+        
         int cIndex = 0;
         int cCounter = 0;
-
         for (int i = 0; i < numElements; i++)
         {
             if (cCounter == 0)
@@ -29,7 +28,6 @@ public static class ColorScheme
                 cIndex++;
                 cCounter = elementsPerStep;
             }
-
             colors[i] = 0xff000000 | ((uint) b << 16) | ((uint) g << 8) | (uint) r;
             b = b + bInc;
             g = g + gInc;
@@ -42,10 +40,8 @@ public static class ColorScheme
             if (r > 255f) r = 255f;
             cCounter--;
         }
-
         return colors;
     }
-
     public static uint[] CreateColorScheme(Color[] colorArray, int numElements)
     {
         uint[] colors = new uint[colorArray.Length];

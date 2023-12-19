@@ -41,12 +41,12 @@ public class BigIntegerRenderer : MandelbrotRendererBase
         int px, py;
         BigDecimal bailout = 4.0;
 
-        BigDecimal[] x0row = new BigDecimal[maxX - tParams.startX];
-        for (int i = 0; i < x0row.Length; i++)
+        BigDecimal[] x0Row = new BigDecimal[maxX - tParams.startX];
+        for (int i = 0; i < x0Row.Length; i++)
         {
-            x0row[i] = xscale;
-            x0row[i].Multiply(i + tParams.startX);
-            x0row[i].Add(xmin);
+            x0Row[i] = xscale;
+            x0Row[i].Multiply(i + tParams.startX);
+            x0Row[i].Add(xmin);
         }
 
         BigDecimal x = 0;
@@ -65,7 +65,7 @@ public class BigIntegerRenderer : MandelbrotRendererBase
 
             for (px = tParams.startX; px < maxX; px++)
             {
-                x0 = x0row[px - tParams.startX];
+                x0 = x0Row[px - tParams.startX];
 
                 x.Zero();
                 y.Zero();

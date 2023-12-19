@@ -1,20 +1,22 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using Mandelbrot.Decimal;
 using Mandelbrot.FloatRenderer;
 using static System.Drawing.Imaging.PixelFormat;
 
 namespace Mandelbrot;
 
+[SuppressMessage("Interoperability", "CA1416")]
 public sealed partial class MainForm : Form
 {
-    private const int WHEEL_DELTA = 120;
-    private const double ZOOM_FACTOR_IN = 0.8;
-    private const double ZOOM_FACTOR_OUT = 1.2;
-    private Bitmap bmp;
+    private const int WheelDelta = 120;
+    private const double ZoomFactorIn = 0.8;
+    private const double ZoomFactorOut = 1.2;
+    private Bitmap? bmp;
 
     private uint[] bmpBits;
 
-    private ControlForm controlForm;
+    private ControlForm? controlForm;
     private MandelbrotRendererBase currentRenderer;
     private GCHandle gcHandle;
     private int moveX0, moveY0;
@@ -35,12 +37,12 @@ public sealed partial class MainForm : Form
 
         RendererList = new List<MandelbrotRendererBase>
         {
+            new FloatRenderer.FloatRenderer(this, colorPalette, colorPaletteSize),
             new DoubleRenderer(this, colorPalette, colorPaletteSize),
             new BigIntegerRenderer.BigIntegerRenderer(this, colorPalette, colorPaletteSize),
             new SimpleBigIntRenderer.SimpleBigIntRenderer(this, colorPalette, colorPaletteSize),
             new BigFloatRenderer.BigFloatRenderer(this, colorPalette, colorPaletteSize),
             new DecimalRenderer(this, colorPalette, colorPaletteSize),
-            new FloatRenderer.FloatRenderer(this, colorPalette, colorPaletteSize),
             new ComplexPlaneRenderer(this, colorPalette, colorPaletteSize)
         };
         currentRenderer = RendererList[0];
@@ -54,14 +56,14 @@ public sealed partial class MainForm : Form
     {
         controlForm = new ControlForm(this);
         controlForm.Show();
-        MainFormSizeChanged(null, null);
+        MainFormSizeChanged(null!, null!);
     }
 
     private void MainFormFormClosed(object sender, FormClosedEventArgs e)
     {
         currentRenderer.TerminateThreads();
         FreeHeapMem();
-        controlForm.Close();
+        controlForm?.Close();
     }
 
     private void FreeHeapMem()
@@ -77,7 +79,8 @@ public sealed partial class MainForm : Form
 
     private void MainFormSizeChanged(object sender, EventArgs e)
     {
-        if (currentRenderer == null) return;
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if(currentRenderer is null) return;
 
         currentRenderer.TerminateThreads();
 
@@ -108,7 +111,7 @@ public sealed partial class MainForm : Form
         _currentZoom = 1.00f;
         currentRenderer.TerminateThreads();
         currentRenderer = RendererList[index];
-        MainFormSizeChanged(null, null);
+        MainFormSizeChanged(null!, null!);
     }
 
     private static void ResetInitialParams(MandelbrotRendererBase renderer)
@@ -126,12 +129,12 @@ public sealed partial class MainForm : Form
     public void OnParametersChanged()
     {
         currentRenderer.TerminateThreads();
-        currentRenderer.Draw((int) controlForm.udIterations.Value, (int) controlForm.udNumThreads.Value);
+        currentRenderer.Draw((int) controlForm!.udIterations.Value, (int) controlForm.udNumThreads.Value);
     }
 
     private void MainFormPaint(object sender, PaintEventArgs e)
     {
-        e.Graphics.DrawImageUnscaled(bmp, 0, 0);
+        e.Graphics.DrawImageUnscaled(bmp!, 0, 0);
     }
 
     private void timerRefresh_Tick(object sender, EventArgs e)
@@ -148,7 +151,7 @@ public sealed partial class MainForm : Form
 
     private void MainFormMouseMove(object sender, MouseEventArgs e)
     {
-        controlForm.txtInfo.Text = $@"Zoom:{_currentZoom:F}x || Current Coordinates:{currentRenderer.GetCoordinateStr(e.X, e.Y)}";
+        controlForm!.txtInfo.Text = $@"Zoom:{_currentZoom:F}x || Current Coordinates:{currentRenderer.GetCoordinateStr(e.X, e.Y)}";
         if (!moving) return;
         currentRenderer.Move(e.X - moveX0, e.Y - moveY0);
         moveX0 = e.X;
@@ -164,8 +167,8 @@ public sealed partial class MainForm : Form
     {
         double factor = 1.0;
         if (e.Delta > 0)
-            factor = Math.Pow(ZOOM_FACTOR_IN, e.Delta / (double) WHEEL_DELTA);
-        else if (e.Delta < 0) factor = Math.Pow(ZOOM_FACTOR_OUT, -e.Delta / (double) WHEEL_DELTA);
+            factor = Math.Pow(ZoomFactorIn, e.Delta / (double) WheelDelta);
+        else if (e.Delta < 0) factor = Math.Pow(ZoomFactorOut, -e.Delta / (double) WheelDelta);
         currentRenderer.Zoom(e.X, e.Y, factor);
         _currentZoom /= factor;
     }

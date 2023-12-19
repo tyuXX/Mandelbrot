@@ -13,12 +13,12 @@ public struct BigDecimal : IComparable, IComparable<BigDecimal>
         set => mantissa = new BigInteger(value);
     }
 
-    public int Exponent;
+    public int exponent;
 
     public BigDecimal(BigInteger mantissa, int exponent)
     {
         this.mantissa = mantissa;
-        Exponent = exponent;
+        this.exponent = exponent;
 
         if (AlwaysTruncate) Truncate();
     }
@@ -26,18 +26,18 @@ public struct BigDecimal : IComparable, IComparable<BigDecimal>
     public void Set(BigDecimal d)
     {
         mantissa = new BigInteger(d.mantissa);
-        Exponent = d.Exponent;
+        exponent = d.exponent;
     }
     
     public void Normalize()
     {
         if (Mantissa.IsZero())
-            Exponent = 0;
+            exponent = 0;
         else
             while (Mantissa.Mod10() > 0)
             {
                 Mantissa.DivByPow10(1);
-                Exponent++;
+                exponent++;
             }
     }
     public void Truncate()
@@ -48,7 +48,7 @@ public struct BigDecimal : IComparable, IComparable<BigDecimal>
             int powTen = numDigits - Precision;
             BigInteger b = Mantissa.DivByPow10(powTen);
             Mantissa = b;
-            Exponent += powTen;
+            exponent += powTen;
         }
     }
 
@@ -76,7 +76,7 @@ public struct BigDecimal : IComparable, IComparable<BigDecimal>
 
     public static explicit operator double(BigDecimal value)
     {
-        return (double) value.Mantissa * Math.Pow(10, value.Exponent);
+        return (double) value.Mantissa * Math.Pow(10, value.exponent);
     }
 
     public static explicit operator float(BigDecimal value)
@@ -86,12 +86,12 @@ public struct BigDecimal : IComparable, IComparable<BigDecimal>
 
     public static explicit operator int(BigDecimal value)
     {
-        return (int) new BigInteger(value.Mantissa).MulByPow10(value.Exponent);
+        return (int) new BigInteger(value.Mantissa).MulByPow10(value.exponent);
     }
 
     public static explicit operator uint(BigDecimal value)
     {
-        return (uint) new BigInteger(value.Mantissa).MulByPow10(value.Exponent);
+        return (uint) new BigInteger(value.Mantissa).MulByPow10(value.exponent);
     }
 
     #endregion
@@ -106,29 +106,29 @@ public struct BigDecimal : IComparable, IComparable<BigDecimal>
     public void Zero()
     {
         Mantissa = 0;
-        Exponent = 0;
+        exponent = 0;
     }
     private static BigInteger AlignExponent(BigDecimal value, BigDecimal reference)
     {
-        BigInteger b = new BigInteger(value.Mantissa).MulByPow10(value.Exponent - reference.Exponent);
+        BigInteger b = new BigInteger(value.Mantissa).MulByPow10(value.exponent - reference.exponent);
         return b;
     }
 
     private static BigInteger AlignExponentInPlace(BigDecimal value, BigDecimal reference)
     {
-        value.mantissa.MulByPow10(value.Exponent - reference.Exponent);
+        value.mantissa.MulByPow10(value.exponent - reference.exponent);
         return value.mantissa;
     }
 
     public void Add(BigDecimal value)
     {
-        if (Exponent > value.Exponent)
+        if (exponent > value.exponent)
         {
-            mantissa.MulByPow10(Exponent - value.Exponent);
+            mantissa.MulByPow10(exponent - value.exponent);
             mantissa.Add(value.mantissa);
-            Exponent = value.Exponent;
+            exponent = value.exponent;
         }
-        else if (Exponent < value.Exponent)
+        else if (exponent < value.exponent)
         {
             mantissa.Add(AlignExponent(value, this));
         }
@@ -141,7 +141,7 @@ public struct BigDecimal : IComparable, IComparable<BigDecimal>
     public void Multiply(BigDecimal value)
     {
         mantissa.Multiply(value.Mantissa);
-        Exponent += value.Exponent;
+        exponent += value.exponent;
     }
 
     public static BigDecimal operator -(BigDecimal value)
@@ -177,14 +177,14 @@ public struct BigDecimal : IComparable, IComparable<BigDecimal>
         BigDecimal b = 0;
         b.Set(left);
 
-        return left.Exponent > right.Exponent
-            ? new BigDecimal(AlignExponentInPlace(b, right).Add(right.Mantissa), right.Exponent)
-            : new BigDecimal(AlignExponent(right, left).Add(left.Mantissa), left.Exponent);
+        return left.exponent > right.exponent
+            ? new BigDecimal(AlignExponentInPlace(b, right).Add(right.Mantissa), right.exponent)
+            : new BigDecimal(AlignExponent(right, left).Add(left.Mantissa), left.exponent);
     }
 
     public static BigDecimal operator *(BigDecimal left, BigDecimal right)
     {
-        return new BigDecimal(left.Mantissa * right.Mantissa, left.Exponent + right.Exponent);
+        return new BigDecimal(left.Mantissa * right.Mantissa, left.exponent + right.exponent);
     }
 
     public static BigDecimal operator /(BigDecimal dividend, BigDecimal divisor)
@@ -193,43 +193,43 @@ public struct BigDecimal : IComparable, IComparable<BigDecimal>
         if (exponentChange < 0) exponentChange = 0;
         BigInteger b = new BigInteger(dividend.Mantissa);
         b.MulByPow10(exponentChange);
-        return new BigDecimal(b.Divide(divisor.Mantissa), dividend.Exponent - divisor.Exponent - exponentChange);
+        return new BigDecimal(b.Divide(divisor.Mantissa), dividend.exponent - divisor.exponent - exponentChange);
     }
 
     public static bool operator ==(BigDecimal left, BigDecimal right)
     {
-        return left.Exponent == right.Exponent && left.Mantissa == right.Mantissa;
+        return left.exponent == right.exponent && left.Mantissa == right.Mantissa;
     }
 
     public static bool operator !=(BigDecimal left, BigDecimal right)
     {
-        return left.Exponent != right.Exponent || left.Mantissa != right.Mantissa;
+        return left.exponent != right.exponent || left.Mantissa != right.Mantissa;
     }
 
     public static bool operator <(BigDecimal left, BigDecimal right)
     {
-        return left.Exponent > right.Exponent
+        return left.exponent > right.exponent
             ? AlignExponent(left, right) < right.Mantissa
             : left.Mantissa < AlignExponent(right, left);
     }
 
     public static bool operator >(BigDecimal left, BigDecimal right)
     {
-        return left.Exponent > right.Exponent
+        return left.exponent > right.exponent
             ? AlignExponent(left, right) > right.Mantissa
             : left.Mantissa > AlignExponent(right, left);
     }
 
     public static bool operator <=(BigDecimal left, BigDecimal right)
     {
-        return left.Exponent > right.Exponent
+        return left.exponent > right.exponent
             ? AlignExponent(left, right) <= right.Mantissa
             : left.Mantissa <= AlignExponent(right, left);
     }
 
     public static bool operator >=(BigDecimal left, BigDecimal right)
     {
-        return left.Exponent > right.Exponent
+        return left.exponent > right.exponent
             ? AlignExponent(left, right) >= right.Mantissa
             : left.Mantissa >= AlignExponent(right, left);
     }
@@ -238,12 +238,12 @@ public struct BigDecimal : IComparable, IComparable<BigDecimal>
 
     public override string ToString()
     {
-        return string.Concat(Mantissa.ToString(), "E", Exponent);
+        return string.Concat(Mantissa.ToString(), "E", exponent);
     }
 
     public bool Equals(BigDecimal other)
     {
-        return other.Mantissa.Equals(Mantissa) && other.Exponent == Exponent;
+        return other.Mantissa.Equals(Mantissa) && other.exponent == exponent;
     }
 
     public override bool Equals(object? obj)
@@ -256,7 +256,7 @@ public struct BigDecimal : IComparable, IComparable<BigDecimal>
     {
         unchecked
         {
-            return (Mantissa.GetHashCode() * 397) ^ Exponent;
+            return (Mantissa.GetHashCode() * 397) ^ exponent;
         }
     }
 
